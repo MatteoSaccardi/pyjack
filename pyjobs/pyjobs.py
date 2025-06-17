@@ -227,58 +227,30 @@ class observable:
         '''
         return self.tau_int
 
-    def plot_acf_and_iat(self, max_lag=None):
-        """
-        Plot autocorrelation functions of each component in self.data, and compute & print integrated autocorrelation times.
+    def plot_autocorrelation(self, which_obs=[0]):
+        N = self.N
+        data = self.data.reshape(N,-1)
+        
+        plt.figure(figsize=(10,5))
 
-        Assumes self.data is shape (N_samples, N_components).
-        """
-
-        data = self.data
-        N = data.shape[0]
-
-        if max_lag is None:
-            max_lag = N // 2
-
-        if data.ndim == 1:
-            data = data.reshape(-1, 1)
-
-        acfs = []
-        iats = []
-
-        for i in range(data.shape[1]):
-            x = data[:, i]
-            x = x - numpy.mean(x)
-            var = numpy.var(x)
-            acf = numpy.empty(max_lag)
-            for lag in range(1, max_lag + 1):
-                acf[lag - 1] = numpy.corrcoef(x[:-lag], x[lag:])[0, 1]
-            acfs.append(acf)
-
-            # Compute integrated autocorrelation time with positive term windowing
-            tau_int = 0.5 + numpy.sum(acf[acf > 0])
-            iats.append(tau_int)
-
-        acfs = numpy.array(acfs)
-
-        # Plot all ACFs on the same plot
-        plt.figure(figsize=(8, 5))
-        lags = numpy.arange(1, max_lag + 1)
-        for i, acf in enumerate(acfs):
-            plt.plot(lags, acf, label=f'Component {i + 1} (IAT={iats[i]:.2f})')
-
-        plt.xlabel('Lag')
-        plt.ylabel('Autocorrelation')
-        plt.title('Autocorrelation Functions per Component')
-        plt.legend()
-        plt.grid(True)
+        for idx,iobs in enumerate(which_obs):
+            mean_obs = numpy.mean(data[:,iobs])
+            diffs0 = data[:,iobs] - mean_obs
+            gamma0 = diffs0 @ diffs0 / N
+            gammas = [ gamma0 ]
+            tauint = 0.5
+            for t in range(1, N-1):
+                diffs_i = data[0:N-t,iobs] - mean_obs[0:N-t]
+                diffs_i_plus_t = data[t:,iobs] - mean_obs[t:]
+                gamma_t = diffs_i @ diffs_i_plus_t / ( N - t )
+                gammas.append(gamma_t)
+                tauint += gamma_t / gamma0
+            plt.plot(gammas, color=f'C{idx}', label=rf'Obs {iobs}, $\tau_{{\mathrm{{int}}}} = {tauint:.2f}$')
+        plt.xlabel(r'$t$')
+        plt.title(rf'$\Gamma(t) = \frac1{{N-t}} \sum_{{i=1}}^{{N-t}} (\mathcal O_i - \overline{{\mathcal O}}) (\mathcal O_{{i+t}} - \overline {{\mathcal O}})$ , $N={N}$')
+        plt.tight_layout()
+        plt.draw()
         plt.show()
-
-        # Optionally print IATs
-        for i, tau in enumerate(iats):
-            print(f'Component {i + 1} integrated autocorrelation time: {tau:.3f}')
-
-
 
 
 
