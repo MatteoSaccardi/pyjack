@@ -227,19 +227,12 @@ class observable:
         '''
         return self.tau_int
 
-    def plot_autocorr(self):
+    def plot_autocorr_and_iat(self, want_return=False):
         '''
-        Plot the autocorrelation function of the observable.
+        Plot the autocorrelation function (ACF) and integrated autocorrelation time (IAT).
 
-        This method computes the autocorrelation function (ACF) for each
-        component of the jackknife samples of the observable. The ACF is
-        calculated up to a maximum lag determined by half the number of
-        configurations. The average ACF across all components is plotted
-        against the lag.
-
-        The plot includes the autocorrelation values on the y-axis and the
-        lag on the x-axis, with an optional title derived from the observable's
-        label. A grid is included for better visualization.
+        The ACF is computed up to max lag = N/2. 
+        The IAT is the cumulative sum of ACF plus 0.5 as per definition.
 
         Returns
         -------
@@ -256,16 +249,42 @@ class observable:
             for lag in range(1, max_lag):
                 c_lag = numpy.dot(v[:-lag], numpy.conj(v[lag:])).real
                 acf_val = c_lag / norm
+                if acf_val < 0:  # stop sum if autocorr negative (common practice)
+                    break
                 acf.append(acf_val)
             acfs.append(acf)
-        avg_acf = numpy.mean(acfs, axis=0)
-        plt.figure()
-        plt.plot(range(1, len(avg_acf) + 1), avg_acf, marker='o')
-        plt.xlabel('Lag')
-        plt.ylabel('Autocorrelation')
-        plt.title(self.label or 'Autocorrelation vs Lag')
-        plt.grid(True)
+        
+        # Pad acfs so they have the same length (max length among all)
+        max_len = max(len(a) for a in acfs)
+        acfs_padded = numpy.array([a + [0]*(max_len - len(a)) for a in acfs])
+        avg_acf = numpy.mean(acfs_padded, axis=0)
+
+        # Compute integrated autocorrelation time as function of lag
+        iat = 0.5 + numpy.cumsum(avg_acf)
+
+        # Plot
+        fig, ax1 = plt.subplots()
+
+        lags = range(1, len(avg_acf)+1)
+        ax1.plot(lags, avg_acf, 'b-o', label='Autocorrelation')
+        ax1.set_xlabel('Lag')
+        ax1.set_ylabel('Autocorrelation', color='b')
+        ax1.tick_params(axis='y', labelcolor='b')
+        ax1.grid(True)
+
+        ax2 = ax1.twinx()
+        ax2.plot(lags, iat, 'r--', label='Integrated Autocorr. Time')
+        ax2.set_ylabel('Integrated Autocorrelation Time', color='r')
+        ax2.tick_params(axis='y', labelcolor='r')
+
+        plt.title(self.label or 'Autocorrelation & Integrated Autocorr. Time')
+        fig.tight_layout()
         plt.show()
+
+        if want_return:
+            return avg_acf, iat
+
+
 
     def __repr__(self):
         if self.mean is not None and self.std is not None:
