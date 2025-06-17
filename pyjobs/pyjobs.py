@@ -164,7 +164,6 @@ class observable:
                 acf.append(acf_val)
             self.tau_int[i] = 0.5 + numpy.sum(acf)
             self.acf.append(acf)
-        self.acf = numpy.array(self.acf)
         self.tau_int = self.tau_int.reshape(self.shape)
 
     def create_from_jack_samples(self, jack_samples):
