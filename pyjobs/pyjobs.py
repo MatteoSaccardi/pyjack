@@ -5,7 +5,7 @@ data = numpy.random.randn(100,10); obs1 = pyjobs.observable(); obs1.create(data)
 
 import numpy
 import matplotlib.pyplot as plt
-from utils import pretty_print, save, load
+from .utils import pretty_print, save, load
 
 def create_jack_samples(data):
     '''
