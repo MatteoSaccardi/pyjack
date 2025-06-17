@@ -1,5 +1,5 @@
 __all__ = []
 
-import .pyjobs.pyjobs as pyjobs
+from .pyjobs import pyjobs as pyjobs
 
 __all__.extend(['pyjobs'])
