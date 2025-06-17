@@ -238,16 +238,18 @@ class observable:
             diffs0 = data[:,iobs] - mean_obs
             gamma0 = diffs0 @ diffs0 / N
             gammas = [ gamma0 ]
-            tauint = 0.5
-            for t in range(1, N-1):
-                diffs_i = data[0:N-t,iobs] - mean_obs[0:N-t]
-                diffs_i_plus_t = data[t:,iobs] - mean_obs[t:]
+            # tauint = 0.5
+            for t in range(1, int(N/2)):
+                diffs_i = data[0:N-t,iobs] - mean_obs
+                diffs_i_plus_t = data[t:,iobs] - mean_obs
                 gamma_t = diffs_i @ diffs_i_plus_t / ( N - t )
                 gammas.append(gamma_t)
-                tauint += gamma_t / gamma0
-            plt.plot(gammas, color=f'C{idx}', label=rf'Obs {iobs}, $\tau_{{\mathrm{{int}}}} = {tauint:.2f}$')
+                # tauint += gamma_t / gamma0
+            plt.plot(gammas, color=f'C{idx}', label=rf'Obs {iobs}, $\tau_{{\mathrm{{int}}}} = {self.tau_int[iobs]:.2f}$')
+
+        plt.legend()
         plt.xlabel(r'$t$')
-        plt.title(rf'$\Gamma(t) = \frac1{{N-t}} \sum_{{i=1}}^{{N-t}} (\mathcal O_i - \overline{{\mathcal O}}) (\mathcal O_{{i+t}} - \overline {{\mathcal O}})$ , $N={N}$')
+        plt.title(rf'$\Gamma(t) = \frac{{1}}{{N-t}} \sum_{{i=1}}^{{N-t}} (\mathcal{{O}}_i - \overline{{\mathcal{{O}}}}) (\mathcal{{O}}_{{i+t}} - \overline {{\mathcal{{O}}}})$ , $N={N}$')
         plt.tight_layout()
         plt.draw()
         plt.show()
