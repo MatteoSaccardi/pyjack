@@ -5,29 +5,7 @@ data = numpy.random.randn(100,10); obs1 = pyjobs.observable(); obs1.create(data)
 
 import numpy
 import matplotlib.pyplot as plt
-
-def pretty_print(x, dx, further_digits=1):
-    '''
-    Return a string representation of x with uncertainty dx.
-
-    Parameters
-    ----------
-    x : float
-        The value to be printed.
-    dx : float
-        The uncertainty associated to x.
-    further_digits : int, optional
-        The number of digits to be printed beyond the uncertainty (default: 1).
-
-    Returns
-    -------
-    string
-        A string representation of x with uncertainty dx.
-    '''
-    if dx == 0:
-        return f'{x}(0)'
-    decimal_places = max(0, -int(numpy.floor(numpy.log10(dx)))) + further_digits
-    return f'{x:.{decimal_places}f}({int(dx * 10**decimal_places)})'
+from utils import pretty_print, save, load
 
 def create_jack_samples(data):
     '''
@@ -254,7 +232,11 @@ class observable:
         plt.draw()
         plt.show()
 
-
+    def save(self, filename):
+        save(self, filename)
+    
+    def load(filename):
+        return load(filename)
 
     def __repr__(self):
         if self.mean is not None and self.std is not None:
