@@ -1,5 +1,5 @@
 __all__ = []
 
-from .core import observable as observable
+from .pyjobs import *
 
-__all__.extend(['observable'])
+__all__.extend(pyjobs.__all__)
