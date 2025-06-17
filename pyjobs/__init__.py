@@ -1,3 +1,3 @@
-from pyjobs import observable
+from .pyjobs import observable
 
 __all__ = ['observable']
