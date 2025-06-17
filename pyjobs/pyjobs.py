@@ -151,6 +151,7 @@ class observable:
 
         # Autocorrelation time
         self.tau_int = numpy.zeros(reshaped.shape[1])
+        self.acf = numpy.zeros(reshaped.shape)
         for i in range(reshaped.shape[1]):
             v = reshaped[:, i] - numpy.mean(reshaped[:, i])
             norm = numpy.dot(v, numpy.conj(v)).real
@@ -162,7 +163,7 @@ class observable:
                     break
                 acf.append(acf_val)
             self.tau_int[i] = 0.5 + numpy.sum(acf)
-        self.acf = acf
+            self.acf[:,i] = numpy.array(acf)
         self.tau_int = self.tau_int.reshape(self.shape)
 
     def create_from_jack_samples(self, jack_samples):
