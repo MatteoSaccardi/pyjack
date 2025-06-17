@@ -151,7 +151,6 @@ class observable:
 
         # Autocorrelation time
         self.tau_int = numpy.zeros(reshaped.shape[1])
-        self.acf = []
         for i in range(reshaped.shape[1]):
             v = reshaped[:, i] - numpy.mean(reshaped[:, i])
             norm = numpy.dot(v, numpy.conj(v)).real
@@ -163,7 +162,6 @@ class observable:
                     break
                 acf.append(acf_val)
             self.tau_int[i] = 0.5 + numpy.sum(acf)
-            self.acf.append(acf)
         self.tau_int = self.tau_int.reshape(self.shape)
 
     def create_from_jack_samples(self, jack_samples):
@@ -229,23 +227,49 @@ class observable:
         '''
         return self.tau_int
 
-    def plot_autocorr(self, max_lag=None):
-        '''
-        Plot autocorrelation functions of each component in self.data, and print integrated autocorrelation times.
-        '''
+    def plot_acf_and_iat(self, max_lag=None):
+        """
+        Plot autocorrelation functions of each component in self.data, and compute & print integrated autocorrelation times.
 
-        acfs = numpy.array(self.acf)
-        iats = numpy.array(self.tau_int)
+        Assumes self.data is shape (N_samples, N_components).
+        """
+
+        data = self.data
+        N = data.shape[0]
+
+        if max_lag is None:
+            max_lag = N // 2
+
+        if data.ndim == 1:
+            data = data.reshape(-1, 1)
+
+        acfs = []
+        iats = []
+
+        for i in range(data.shape[1]):
+            x = data[:, i]
+            x = x - numpy.mean(x)
+            var = numpy.var(x)
+            acf = numpy.empty(max_lag)
+            for lag in range(1, max_lag + 1):
+                acf[lag - 1] = numpy.corrcoef(x[:-lag], x[lag:])[0, 1]
+            acfs.append(acf)
+
+            # Compute integrated autocorrelation time with positive term windowing
+            tau_int = 0.5 + numpy.sum(acf[acf > 0])
+            iats.append(tau_int)
+
+        acfs = numpy.array(acfs)
 
         # Plot all ACFs on the same plot
         plt.figure(figsize=(8, 5))
         lags = numpy.arange(1, max_lag + 1)
         for i, acf in enumerate(acfs):
-            plt.plot(lags, acf, label=rf'Component {i + 1} (IAT={iats[i]:.2f})')
+            plt.plot(lags, acf, label=f'Component {i + 1} (IAT={iats[i]:.2f})')
 
         plt.xlabel('Lag')
-        plt.ylabel(r'Autocorrelation')
-        plt.title(r'Autocorrelation Functions per Component')
+        plt.ylabel('Autocorrelation')
+        plt.title('Autocorrelation Functions per Component')
         plt.legend()
         plt.grid(True)
         plt.show()
