@@ -1,0 +1,4 @@
+TODO
+
+- save and load files
+- check plot autocorrelation
