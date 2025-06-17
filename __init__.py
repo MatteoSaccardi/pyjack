@@ -1,3 +1,3 @@
-from .pyjobs import pyjobs
+from .pyjobs.pyjobs import pyjobs
 
 __all__ = ['pyjobs']
