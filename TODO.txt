@@ -2,3 +2,4 @@ TODO
 
 - save and load files
 - check plot autocorrelation
+- compatibility with Fitter

@@ -48,8 +48,41 @@ def create_jack_samples(data):
             for i in range(data.shape[0])
         ])
 
-class pyjobs:
+class observable:
     def __init__(self, description=None, label=None):
+        '''
+        Initialize an observable object with optional description and label.
+
+        Parameters
+        ----------
+        description : str, optional
+            A brief description of the observable (default is None).
+        label : str, optional
+            A label for the observable, used for identification (default is None).
+
+        Attributes
+        ----------
+        description : str
+            Description of the observable.
+        label : str
+            Label of the observable.
+        data : numpy.ndarray or None
+            The input data associated with the observable.
+        jack_samples : numpy.ndarray or None
+            Jackknife samples derived from the input data.
+        N : int or None
+            The number of configurations in the input data.
+        shape : tuple or None
+            The shape of the observable without the configuration axis.
+        mean : numpy.ndarray or None
+            The mean of the jackknife samples.
+        std : numpy.ndarray or None
+            The standard deviation of the jackknife samples.
+        cov : numpy.ndarray or None
+            The covariance matrix of the jackknife samples.
+        tau_int : numpy.ndarray or None
+            The integrated autocorrelation time of the observable.
+        '''
         self.description = description
         self.label = label
         
@@ -61,24 +94,10 @@ class pyjobs:
         self.std = None
         self.cov = None
         self.tau_int = None
-
-    @classmethod
-    def observable(cls, description=None, label=None):
-        '''
-        Factory method for creating an instance of pyjobs from scratch.
-        
-        Parameters:
-        description (str, optional): A description of the observable.
-        label (str, optional): A label for the observable.
-        
-        Returns:
-        pyjobs: An instance of pyjobs with the given description and label.
-        '''
-        return cls(description=description, label=label)
     
     def create(self, data, axis=0):
         '''
-        Initializes the observable with data and computes statistical properties.
+        Creates the observable with data and computes statistical properties.
 
         Parameters:
         data (array-like): The input data to be used for the observable. It is assumed
@@ -257,13 +276,13 @@ class pyjobs:
         return f'pyjobs(mean={self.mean}, std={self.std}, description={self.description})'
 
     def _new(self, new_jack_samples):
-        new_obs = pyjobs(description=self.description, label=self.label)
+        new_obs = observable(description=self.description, label=self.label)
         new_obs.create_from_jack_samples(new_jack_samples)
         return new_obs
     
     # Arithmetic operations
     def __add__(self, other):
-        if isinstance(other, pyjobs):
+        if isinstance(other, observable):
             new_jack_samples = self.jack_samples + other.jack_samples
         else:
             new_jack_samples = self.jack_samples + other
@@ -272,7 +291,7 @@ class pyjobs:
     def __radd__(self, other): return self + other
 
     def __sub__(self, other):
-        if isinstance(other, pyjobs):
+        if isinstance(other, observable):
             new_jack_samples = self.jack_samples - other.jack_samples
         else:
             new_jack_samples = self.jack_samples - other
@@ -281,7 +300,7 @@ class pyjobs:
     def __rsub__(self, other): return self._new(other - self.jack_samples)
 
     def __mul__(self, other):
-        if isinstance(other, pyjobs):
+        if isinstance(other, observable):
             new_jack_samples = self.jack_samples * other.jack_samples
         else:
             new_jack_samples = self.jack_samples * other
@@ -290,7 +309,7 @@ class pyjobs:
     def __rmul__(self, other): return self * other
 
     def __truediv__(self, other):
-        if isinstance(other, pyjobs):
+        if isinstance(other, observable):
             new_jack_samples = self.jack_samples / other.jack_samples
         else:
             new_jack_samples = self.jack_samples / other
@@ -299,21 +318,21 @@ class pyjobs:
     def __rtruediv__(self, other): return self._new(other / self.jack_samples)
 
     def __pow__(self, power):
-        if isinstance(power, pyjobs):
+        if isinstance(power, observable):
             new_jack_samples = self.jack_samples ** power.jack_samples
         else:
             new_jack_samples = self.jack_samples ** power
         return self._new(new_jack_samples)
 
     def __matmul__(self, other):
-        if isinstance(other, pyjobs):
+        if isinstance(other, observable):
             new_jack_samples = self.jack_samples @ other.jack_samples
         else:
             new_jack_samples = self.jack_samples @ other
         return self._new(new_jack_samples)
 
     def __rmatmul__(self, other):
-        if isinstance(other, pyjobs):
+        if isinstance(other, observable):
             new_jack_samples = other.jack_samples @ self.jack_samples
         else:
             new_jack_samples = other @ self.jack_samples

@@ -27,7 +27,7 @@ import numpy
 
 my_data = numpy.random.randn(100,10)
 
-obs = pyjobs.observable(label="MyObservable")
+obs = pyjobs.observable(description='My Observable')
 obs.create(my_data)
 print(obs)
 
