@@ -31,6 +31,8 @@ pip install -U git+https://github.com/MatteoSaccardi/pyjack.git@main
 Copyright (C) 2025, Matteo Saccardi
 
 ## Usage
+The syntax is inspired by the much more complete Python library [`pyobs`](https://github.com/mbruno46/pyobs).
+
 Check out the [tests folder](https://github.com/MatteoSaccardi/pyjack/tree/main/tests) for more examples.
 
 ```python

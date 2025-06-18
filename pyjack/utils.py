@@ -72,3 +72,16 @@ def plt_errorbar_fill_color(x,y,dy,color='C0',label=None,alpha=0.3):
     plt.plot(x,y-dy,color=color,linestyle='--')
     plt.plot(x,y+dy,color=color,linestyle='--')
     plt.fill_between(x,y-dy,y+dy,color=color,alpha=alpha)
+
+def plt_errorbar_fillx_color(y,x,dx,color='C0',label=None,alpha=0.3):
+    '''Plot errorbar and fill it with color along x
+    
+    Plot vertical line at x labeled as label, adding dashed lines (x-dx,y) and (x+dx,y)
+    and filling between coloring with color faded with alpha'''
+    if label:
+        plt.axvline(x,color=color,label=label)
+    else:
+        plt.axvline(x,color=color)
+    plt.axvline(x-dx,color=color,linestyle='--')
+    plt.axvline(x+dx,color=color,linestyle='--')
+    plt.fill_betweenx(y,x-dx,x+dx,color=color,alpha=alpha)

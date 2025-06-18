@@ -1,5 +1,5 @@
 from .pyjack import observable
-from .utils import pretty_print, save, load
+from .utils import pretty_print, save, load, plt_errorbar_fill_color, plt_errorbar_fillx_color
 from .jackfit import jackfit
 
 from .ufuncs import (
@@ -11,6 +11,7 @@ from .ufuncs import (
 
 __all__ = [ 'observable', 
             'pretty_print', 'save', 'load',
+            'plt_errorbar_fill_color', 'plt_errorbar_fillx_color',
             'jackfit',
             'exp', 'log', 'log10', 'sqrt',
             'sin', 'cos', 'tan',
