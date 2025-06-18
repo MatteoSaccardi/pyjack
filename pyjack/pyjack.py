@@ -1,8 +1,3 @@
-'''
-import numpy; from pyjack import pyjack; import pyobs
-data = numpy.random.randn(100,10); obs1 = pyjack.observable(); obs1.create(data); obs11 = pyobs.observable(); obs11.create('a',data.reshape(-1),shape=(10,))
-'''
-
 import numpy
 import matplotlib.pyplot as plt
 from .utils import pretty_print, save, load
@@ -349,3 +344,10 @@ class observable:
     def real(cls, x): return cls._apply_ufunc(numpy.real, x)
     @classmethod
     def imag(cls, x): return cls._apply_ufunc(numpy.imag, x)
+
+
+'''
+# Comparison with pyobs
+import numpy; from pyjack import pyjack; import pyobs
+data = numpy.random.randn(100,10); obs1 = pyjack.observable(); obs1.create(data); obs11 = pyobs.observable(); obs11.create('a',data.reshape(-1),shape=(10,))
+'''

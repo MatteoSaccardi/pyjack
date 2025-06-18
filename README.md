@@ -48,22 +48,22 @@ exponential = pyjack.exp(obs)
 
 # Possibility to perform fits
 
->>> import numpy, matplotlib.pyplot as plt, pyjack
->>> data = numpy.random.randn(100,10)*0.3+4
->>> obs = pyjack.observable()
->>> obs.create(data)
->>> fitfunc = 'params0+params1*x'
->>> initial_guess = [3,0]
->>> W = 'diag'
->>> fit1 = pyjack.jackfit(fitfunc,W,initial_guess)
->>> fit1.fit(numpy.arange(obs.data.shape[1]),obs,max_iter=1000,tol=1e-8,num_samples=10000)
->>> [jackfit.fit] Fit did converge: [LevenbergMarquardt.minimize] Convergence with tolerance 1e-08 reached after 2 iterations. Exiting successfully
-[jackfit.fit] chi2obs = 2.4941482973456255
-[jackfit.fit] chi2exp = 7.8693896829803505 +- 1.1128997617269722
-[jackfit.fit] p-value = 0.9614 +- 0.0019264929632660877
->>> print(fit1.params)
-pyjack(4.001(17), 0.0009(33), description=Best parameters of fit)
->>> fit1.plot()
+import numpy, matplotlib.pyplot as plt, pyjack
+data = numpy.random.randn(100,10)*0.3+4
+obs = pyjack.observable()
+obs.create(data)
+fitfunc = 'params0+params1*x'
+initial_guess = [3,0]
+W = 'diag'
+fit1 = pyjack.jackfit(fitfunc,W,initial_guess)
+fit1.fit(numpy.arange(obs.data.shape[1]),obs,max_iter=1000,tol=1e-8,num_samples=10000)
+# [jackfit.fit] Fit did converge: [LevenbergMarquardt.minimize] Convergence with tolerance 1e-08 reached after 2 iterations. Exiting successfully
+# [jackfit.fit] chi2obs = 2.4941482973456255
+# [jackfit.fit] chi2exp = 7.8693896829803505 +- 1.1128997617269722
+# [jackfit.fit] p-value = 0.9614 +- 0.0019264929632660877
+print(fit1.params)
+# pyjack(4.001(17), 0.0009(33), description=Best parameters of fit)
+fit1.plot()
 
 ```
 
