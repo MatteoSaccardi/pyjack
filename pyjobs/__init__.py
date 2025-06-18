@@ -1,4 +1,4 @@
-from .pyjobs import observable
+from .pyjack import observable
 from .utils import pretty_print, save, load
 from .jackfit import jackfit
 

@@ -1,6 +1,6 @@
 '''
-import numpy; from pyjobs import pyjobs; import pyobs
-data = numpy.random.randn(100,10); obs1 = pyjobs.observable(); obs1.create(data); obs11 = pyobs.observable(); obs11.create('a',data.reshape(-1),shape=(10,))
+import numpy; from pyjack import pyjack; import pyobs
+data = numpy.random.randn(100,10); obs1 = pyjack.observable(); obs1.create(data); obs11 = pyobs.observable(); obs11.create('a',data.reshape(-1),shape=(10,))
 '''
 
 import numpy
@@ -250,8 +250,8 @@ class observable:
             mean_flat = self.mean.flatten()
             err_flat = self.err.flatten()
             formatted = ', '.join(pretty_print(x, dx) for x, dx in zip(mean_flat, err_flat))
-            return f'pyjobs({formatted}, description={self.description})'
-        return f'pyjobs(mean={self.mean}, err={self.err}, description={self.description})'
+            return f'pyjack({formatted}, description={self.description})'
+        return f'pyjack(mean={self.mean}, err={self.err}, description={self.description})'
 
     def _new(self, new_jack_samples):
         new_obs = observable(description=self.description, label=self.label)

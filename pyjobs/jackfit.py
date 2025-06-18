@@ -2,7 +2,7 @@ import numpy
 import matplotlib.pyplot as plt
 # import scipy
 # import pyobs
-from .pyjobs import observable
+from .pyjack import observable
 import sympy
 from typing import Union
 
@@ -374,8 +374,8 @@ class jackfit:
         -----------
         x : array-like
             The independent variable values.
-        obs : pyjobs observable
-            A `pyjobs` observable containing the measured data. 
+        obs : pyjack observable
+            A `pyjack` observable containing the measured data. 
             The function extracts:
             - `obs.error()` for uncertainties on the measurements.
             - `obs.covariance_matrix()` for the covariance matrix.
