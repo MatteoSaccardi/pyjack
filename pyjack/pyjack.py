@@ -6,25 +6,6 @@ plt.rcParams.update({'font.size': 16})
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-def create_jack_samples(data):
-    '''
-    Compute jackknife samples of input data.
-
-    Parameters
-    ----------
-    data : array_like
-        Input data, shape (N, ...).
-
-    Returns
-    -------
-    jack_samples : array_like
-        Jackknife samples, shape (N, ...).
-    '''
-    return numpy.array([
-            numpy.mean(numpy.delete(data, i, axis=0), axis=0)
-            for i in range(data.shape[0])
-        ])
-
 class observable:
     def __init__(self, description=None, label=None):
         '''
@@ -63,6 +44,8 @@ class observable:
         self.description = description
         self.label = label
         
+        self.primary = True
+        self.creator = None
         self.data = None
         self.jack_samples = None
         self.N = None
@@ -92,6 +75,8 @@ class observable:
         cov (numpy.ndarray): The covariance matrix of the jackknife samples.
         tau_int (numpy.ndarray): The integrated autocorrelation time of the observable.
         '''
+        self.primary = True
+        self.creator = 'create'
         if axis != 0:
             data = numpy.moveaxis(data, axis, 0)
         self.data = data
@@ -99,10 +84,31 @@ class observable:
         self.shape = data.shape[1:] # shape of observable without config axis
         # Compute jackknife samples: shape (N, ...) where
         # jack_samples[i] = mean of data excluding data[i]
-        self.jack_samples = create_jack_samples(data)
+        self.jack_samples = self.compute_jack_samples(data)
         self.compute_stats_from_jack_samples(self.jack_samples)
-    
-    def compute_stats_from_jack_samples(self, jack_samples):
+
+    def compute_jack_samples(self, data=None):
+        '''
+        Compute jackknife samples of input data.
+
+        Parameters
+        ----------
+        data : array_like
+            Input data, shape (N, ...).
+
+        Returns
+        -------
+        jack_samples : array_like
+            Jackknife samples, shape (N, ...).
+        '''
+        if data is None:
+            data = self.data
+        return numpy.array([
+                numpy.mean(numpy.delete(data, i, axis=0), axis=0)
+                for i in range(data.shape[0])
+            ])
+        
+    def compute_stats_from_jack_samples(self, jack_samples=None):
         '''
         Computes statistical properties from jackknife samples.
 
@@ -115,6 +121,8 @@ class observable:
         cov (numpy.ndarray): The covariance matrix of the jackknife samples.
         tau_int (numpy.ndarray): The integrated autocorrelation time of the observable.
         '''
+        if jack_samples is None:
+            jack_samples = self.jack_samples
         self.jack_samples = jack_samples
         self.N = self.jack_samples.shape[0]
         
@@ -141,7 +149,7 @@ class observable:
             self.tau_int[i] = 0.5 + numpy.sum(acf)
         self.tau_int = self.tau_int.reshape(self.shape)
 
-    def create_from_jack_samples(self, jack_samples):
+    def create_from_jack_samples(self, jack_samples=None):
         '''
         Initialize observable from jackknife samples.
         
@@ -154,6 +162,9 @@ class observable:
         cov (numpy.ndarray): The covariance matrix of the jackknife samples.
         tau_int (numpy.ndarray): The integrated autocorrelation time of the observable.
         '''
+        self.creator = 'create_from_jack_samples'
+        if jack_samples is None:
+            jack_samples = self.jack_samples
         self.jack_samples = jack_samples
         self.compute_stats_from_jack_samples(self.jack_samples)
 
@@ -167,12 +178,55 @@ class observable:
             Mean of observable, shape (...)
         cov : array_like
             Covariance matrix of observable, shape (..., ...)
-        err : array_like
-            Standard error of observable, shape (...)
         '''
-        self.mean = numpy.array(mean)
-        self.cov = numpy.array(cov)
-        self.err = numpy.sqrt(numpy.diag(cov))
+        self.creator = 'create_from_cov'
+        self.mean = mean
+        self.cov = cov
+        self.err = numpy.sqrt(numpy.diagonal(cov))
+
+    def sampler(self, N=1000, seed=42):
+        '''
+        Generate jackknife samples from mean and covariance matrix.
+
+        Parameters
+        ----------
+        N : int, optional
+            Number of jackknife samples to generate. Default is 1000.
+
+        Returns
+        -------
+        data_samples : array_like
+            Jackknife samples, shape (N, ...)
+        '''
+        numpy.random.seed(seed)
+
+        obs = pyjack.observable(description=self.description, label=self.label)
+
+        mean = numpy.atleast_1d(self.mean)
+        shape = mean.shape
+        flat_mean = mean.ravel()
+        dim = flat_mean.shape[0]
+
+        # Flattened covariance matrix
+        cov = numpy.atleast_2d(self.cov)
+        if cov.shape != (dim, dim):
+            raise ValueError(f'[pyjack.observable.sampler] Covariance shape {cov.shape} incompatible with mean shape {shape}')
+
+        # Generate fluctuations with zero mean and given covariance
+        fluctuations = numpy.random.multivariate_normal(
+            mean=numpy.zeros(dim),
+            cov=cov * (N - 1),
+            size=N
+        )
+
+        # Enforce jackknife constraint (zero mean of fluctuations)
+        fluctuations -= fluctuations.mean(axis=0)
+        
+        # Construct jackknife samples
+        data_samples = flat_mean[None, :] + fluctuations
+        data_samples = data_samples.reshape((N,) + shape)
+        obs.create(data_samples)
+        return obs
 
     def error(self):
         '''
@@ -251,12 +305,17 @@ class observable:
     def _new(self, new_jack_samples):
         new_obs = observable(description=self.description, label=self.label)
         new_obs.create_from_jack_samples(new_jack_samples)
+        new_obs.primary = False
         return new_obs
-    
+
     # Arithmetic operations
     def __add__(self, other):
         if isinstance(other, observable):
-            new_jack_samples = self.jack_samples + other.jack_samples
+            if other.creator == 'create_from_cov':
+                other_sampled = other.sample(self.N)
+                new_jack_samples = self.jack_samples + other_sampled.jack_samples
+            else:
+                new_jack_samples = self.jack_samples + other.jack_samples
         else:
             new_jack_samples = self.jack_samples + other
         return self._new(new_jack_samples)
@@ -265,7 +324,11 @@ class observable:
 
     def __sub__(self, other):
         if isinstance(other, observable):
-            new_jack_samples = self.jack_samples - other.jack_samples
+            if other.creator == 'create_from_cov':
+                other_sampled = other.sample(self.N)
+                new_jack_samples = self.jack_samples - other_sampled.jack_samples
+            else:
+                new_jack_samples = self.jack_samples - other.jack_samples
         else:
             new_jack_samples = self.jack_samples - other
         return self._new(new_jack_samples)
@@ -274,7 +337,11 @@ class observable:
 
     def __mul__(self, other):
         if isinstance(other, observable):
-            new_jack_samples = self.jack_samples * other.jack_samples
+            if other.creator == 'create_from_cov':
+                other_sampled = other.sample(self.N)
+                new_jack_samples = self.jack_samples * other_sampled.jack_samples
+            else:
+                new_jack_samples = self.jack_samples * other.jack_samples
         else:
             new_jack_samples = self.jack_samples * other
         return self._new(new_jack_samples)
@@ -283,30 +350,46 @@ class observable:
 
     def __truediv__(self, other):
         if isinstance(other, observable):
-            new_jack_samples = self.jack_samples / other.jack_samples
+            if other.creator == 'create_from_cov':
+                other_sampled = other.sample(self.N)
+                new_jack_samples = self.jack_samples / other_sampled.jack_samples
+            else:
+                new_jack_samples = self.jack_samples / other.jack_samples
         else:
             new_jack_samples = self.jack_samples / other
         return self._new(new_jack_samples)
 
     def __rtruediv__(self, other): return self._new(other / self.jack_samples)
 
-    def __pow__(self, power):
-        if isinstance(power, observable):
-            new_jack_samples = self.jack_samples ** power.jack_samples
+    def __pow__(self, other):
+        if isinstance(other, observable):
+            if other.creator == 'create_from_cov':
+                other_sampled = other.sample(self.N)
+                new_jack_samples = self.jack_samples ** other_sampled.jack_samples
+            else:
+                new_jack_samples = self.jack_samples ** other.jack_samples
         else:
-            new_jack_samples = self.jack_samples ** power
+            new_jack_samples = self.jack_samples ** other
         return self._new(new_jack_samples)
 
     def __matmul__(self, other):
         if isinstance(other, observable):
-            new_jack_samples = self.jack_samples @ other.jack_samples
+            if other.creator == 'create_from_cov':
+                other_sampled = other.sample(self.N)
+                new_jack_samples = self.jack_samples @ other_sampled.jack_samples
+            else:
+                new_jack_samples = self.jack_samples @ other.jack_samples
         else:
             new_jack_samples = self.jack_samples @ other
         return self._new(new_jack_samples)
 
     def __rmatmul__(self, other):
         if isinstance(other, observable):
-            new_jack_samples = other.jack_samples @ self.jack_samples
+            if other.creator == 'create_from_cov':
+                other_sampled = other.sample(self.N)
+                new_jack_samples = other_sampled.jack_samples @ self.jack_samples
+            else:
+                new_jack_samples = other.jack_samples @ self.jack_samples
         else:
             new_jack_samples = other @ self.jack_samples
         return self._new(new_jack_samples)
