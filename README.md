@@ -48,7 +48,7 @@ exponential = pyjack.exp(obs)
 
 # Possibility to perform fits
 
-import numpy, matplotlib.pyplot as plt, pyjack
+numpy.random.seed(42)
 data = numpy.random.randn(100,10)*0.3+4
 obs = pyjack.observable()
 obs.create(data)

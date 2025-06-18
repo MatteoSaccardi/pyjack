@@ -310,40 +310,6 @@ class observable:
         else:
             new_jack_samples = other @ self.jack_samples
         return self._new(new_jack_samples)
-    
-    # Universal functions
-    @staticmethod
-    def _apply_ufunc(func, x):
-        return x._new(func(x.jack_samples))
-
-    @classmethod
-    def sqrt(cls, x): return cls._apply_ufunc(numpy.sqrt, x)
-    @classmethod
-    def log(cls, x): return cls._apply_ufunc(numpy.log, x)
-    @classmethod
-    def log10(cls, x): return cls._apply_ufunc(numpy.log10, x)
-    @classmethod
-    def exp(cls, x): return cls._apply_ufunc(numpy.exp, x)
-    @classmethod
-    def sin(cls, x): return cls._apply_ufunc(numpy.sin, x)
-    @classmethod
-    def cos(cls, x): return cls._apply_ufunc(numpy.cos, x)
-    @classmethod
-    def tan(cls, x): return cls._apply_ufunc(numpy.tan, x)
-    @classmethod
-    def sinh(cls, x): return cls._apply_ufunc(numpy.sinh, x)
-    @classmethod
-    def cosh(cls, x): return cls._apply_ufunc(numpy.cosh, x)
-    @classmethod
-    def tanh(cls, x): return cls._apply_ufunc(numpy.tanh, x)
-    @classmethod
-    def abs(cls, x): return cls._apply_ufunc(numpy.abs, x)
-    @classmethod
-    def conj(cls, x): return cls._apply_ufunc(numpy.conj, x)
-    @classmethod
-    def real(cls, x): return cls._apply_ufunc(numpy.real, x)
-    @classmethod
-    def imag(cls, x): return cls._apply_ufunc(numpy.imag, x)
 
 
 '''
