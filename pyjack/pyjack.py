@@ -318,8 +318,12 @@ class observable:
 
     def __repr__(self):
         if self.mean is not None and self.err is not None:
-            mean_flat = self.mean.flatten()
-            err_flat = self.err.flatten()
+            if isinstance(self.mean,(int,float)):
+                mean_flat = [ self.mean ]
+                err_flat = [ self.err.flatten() ]
+            else:
+                mean_flat = self.mean.flatten()
+                err_flat = self.err.flatten()
             formatted = ', '.join(pretty_print(x, dx) for x, dx in zip(mean_flat, err_flat))
             return f'pyjack({formatted}, description={self.description})'
         return f'pyjack(mean={self.mean}, err={self.err}, description={self.description})'
