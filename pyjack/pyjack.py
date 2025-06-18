@@ -170,8 +170,8 @@ class observable:
         err : array_like
             Standard error of observable, shape (...)
         '''
-        self.mean = mean
-        self.cov = cov
+        self.mean = numpy.array(mean)
+        self.cov = numpy.array(cov)
         self.err = numpy.sqrt(numpy.diag(cov))
 
     def error(self):

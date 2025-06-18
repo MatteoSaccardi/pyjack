@@ -1,3 +1,5 @@
 TODO
 
+- support for scalars?
+- operations along internal axis e.g. sum, mean
 - complex variables?
