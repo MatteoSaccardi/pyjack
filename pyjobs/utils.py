@@ -1,5 +1,10 @@
 import numpy
+import matplotlib.pyplot as plt
 import pickle
+
+plt.rcParams.update({'font.size': 16})
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 
 def pretty_print(x, dx, further_digits=1):
     '''
@@ -54,3 +59,16 @@ def load(filename: str) -> dict:
     '''
     with open(filename, 'rb') as f:
         return pickle.load(f)
+
+def plt_errorbar_fill_color(x,y,dy,color='C0',label=None,alpha=0.3):
+    '''Plot errorbar and fill it with color
+    
+    Plot (x,y) labeled as label, adding dashed lines (x,y-dy) and (x,y+dy)
+    and filling between coloring with color faded with alpha'''
+    if label:
+        plt.plot(x,y,color=color,label=label)
+    else:
+        plt.plot(x,y,color=color)
+    plt.plot(x,y-dy,color=color,linestyle='--')
+    plt.plot(x,y+dy,color=color,linestyle='--')
+    plt.fill_between(x,y-dy,y+dy,color=color,alpha=alpha)

@@ -7,6 +7,10 @@ import numpy
 import matplotlib.pyplot as plt
 from .utils import pretty_print, save, load
 
+plt.rcParams.update({'font.size': 16})
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
 def create_jack_samples(data):
     '''
     Compute jackknife samples of input data.
@@ -171,6 +175,7 @@ class observable:
         '''
         self.mean = mean
         self.cov = cov
+        self.err = numpy.sqrt(numpy.diag(cov))
 
     def error(self):
         '''
@@ -183,7 +188,7 @@ class observable:
         '''
         return self.std
 
-    def covariance(self):
+    def covariance_matrix(self):
         '''
         Covariance matrix of observable.
         
