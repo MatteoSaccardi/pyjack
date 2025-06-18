@@ -187,7 +187,7 @@ class observable:
         else:
             self.err = numpy.sqrt(numpy.diagonal(cov))
 
-    def sampler(self, N=1000, seed=42):
+    def sample(self, N=1000, seed=42):
         '''
         Generate jackknife samples from mean and covariance matrix.
 
@@ -213,7 +213,7 @@ class observable:
         # Flattened covariance matrix
         cov = numpy.atleast_2d(self.cov)
         if cov.shape != (dim, dim):
-            raise ValueError(f'[pyjack.observable.sampler] Covariance shape {cov.shape} incompatible with mean shape {shape}')
+            raise ValueError(f'[pyjack.observable.sample] Covariance shape {cov.shape} incompatible with mean shape {shape}')
 
         # Generate fluctuations with zero mean and given covariance
         fluctuations = numpy.random.multivariate_normal(
