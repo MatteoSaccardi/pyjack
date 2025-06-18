@@ -68,4 +68,4 @@ fit1.plot()
 ```
 
 ## License
-GNU License
+GPL-2.0 License

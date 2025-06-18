@@ -182,7 +182,10 @@ class observable:
         self.creator = 'create_from_cov'
         self.mean = mean
         self.cov = cov
-        self.err = numpy.sqrt(numpy.diagonal(cov))
+        if isinstance(cov, (int,float)):
+            self.err = numpy.sqrt(cov)
+        else:
+            self.err = numpy.sqrt(numpy.diagonal(cov))
 
     def sampler(self, N=1000, seed=42):
         '''
