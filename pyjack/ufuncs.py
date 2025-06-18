@@ -5,7 +5,7 @@ def _apply_ufunc(func, x, *args, **kwargs):
         x_sampled = x.sample(1000)
         new_x = observable(description=x.description, label=x.label)
         new_x.create(x_sampled)
-        new_x._new(func(new_x.jack_samples, **kwargs))
+        return new_x._new(func(new_x.jack_samples, *args, **kwargs))
     return x._new(func(x.jack_samples, *args, **kwargs))
 
 def sqrt(x):  return _apply_ufunc(numpy.sqrt,  x)
