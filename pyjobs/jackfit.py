@@ -379,8 +379,6 @@ class jackfit:
             The function extracts:
             - `obs.error()` for uncertainties on the measurements.
             - `obs.covariance_matrix()` for the covariance matrix.
-        errinfo : pyobs.errinfo or int
-            If int, taken as the summation window to be used to estimate the covariance matrix of data.
         max_iter : int = 1000
             Maximum number of iterations for Levenberg-Marquardt minimizer.
         tol : float = 1e-8
@@ -467,7 +465,7 @@ class jackfit:
             extrapolated = self.extrapolate(x, plot=False)
         plt.figure(figsize=(10,6))
         # plt.errorbar(self.x,*(self.obs.error()),color='C0',label=r'Data',fmt='.')
-        plt.errorbar(self.x,self.mean,self.err,color='C0',label=r'Data',fmt='.')
+        plt.errorbar(self.x,self.obs.mean,self.obs.err,color='C0',label=r'Data',fmt='.')
         plt_errorbar_fill_color(x,extrapolated.mean,extrapolated.err,color='C1',label=r'Extrapolated')
         plt.legend()
         if isinstance(log,list):

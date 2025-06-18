@@ -58,7 +58,7 @@ class observable:
             The shape of the observable without the configuration axis.
         mean : numpy.ndarray or None
             The mean of the jackknife samples.
-        std : numpy.ndarray or None
+        err : numpy.ndarray or None
             The standard deviation of the jackknife samples.
         cov : numpy.ndarray or None
             The covariance matrix of the jackknife samples.
@@ -73,7 +73,7 @@ class observable:
         self.N = None
         self.shape = None
         self.mean = None
-        self.std = None
+        self.err = None
         self.cov = None
         self.tau_int = None
     
@@ -93,7 +93,7 @@ class observable:
         shape (tuple): The shape of the observable without the configuration axis.
         jack_samples (numpy.ndarray): Jackknife samples, excluding one configuration at a time.
         mean (numpy.ndarray): The mean of the jackknife samples.
-        std (numpy.ndarray): The standard deviation of the jackknife samples.
+        err (numpy.ndarray): The standard deviation of the jackknife samples.
         cov (numpy.ndarray): The covariance matrix of the jackknife samples.
         tau_int (numpy.ndarray): The integrated autocorrelation time of the observable.
         '''
@@ -116,7 +116,7 @@ class observable:
 
         Attributes:
         mean (numpy.ndarray): The mean of the jackknife samples.
-        std (numpy.ndarray): The standard deviation of the jackknife samples.
+        err (numpy.ndarray): The standard deviation of the jackknife samples.
         cov (numpy.ndarray): The covariance matrix of the jackknife samples.
         tau_int (numpy.ndarray): The integrated autocorrelation time of the observable.
         '''
@@ -125,7 +125,7 @@ class observable:
         
         self.mean = numpy.mean(self.jack_samples, axis=0)
         diffs = self.jack_samples - self.mean
-        self.std = numpy.sqrt((self.N - 1) / self.N * numpy.sum(numpy.abs(diffs)**2, axis=0))
+        self.err = numpy.sqrt((self.N - 1) / self.N * numpy.sum(numpy.abs(diffs)**2, axis=0))
 
         reshaped = self.jack_samples.reshape(self.N, -1)
         diffs = reshaped - reshaped.mean(axis=0)
@@ -155,7 +155,7 @@ class observable:
         
         Attributes:
         mean (numpy.ndarray): The mean of the jackknife samples.
-        std (numpy.ndarray): The standard deviation of the jackknife samples.
+        err (numpy.ndarray): The standard deviation of the jackknife samples.
         cov (numpy.ndarray): The covariance matrix of the jackknife samples.
         tau_int (numpy.ndarray): The integrated autocorrelation time of the observable.
         '''
@@ -172,6 +172,8 @@ class observable:
             Mean of observable, shape (...)
         cov : array_like
             Covariance matrix of observable, shape (..., ...)
+        err : array_like
+            Standard error of observable, shape (...)
         '''
         self.mean = mean
         self.cov = cov
@@ -186,7 +188,7 @@ class observable:
         error : array_like
             Standard error of observable, shape (...)
         '''
-        return self.std
+        return self.err
 
     def covariance_matrix(self):
         '''
@@ -244,12 +246,12 @@ class observable:
         return load(filename)
 
     def __repr__(self):
-        if self.mean is not None and self.std is not None:
+        if self.mean is not None and self.err is not None:
             mean_flat = self.mean.flatten()
-            std_flat = self.std.flatten()
-            formatted = ', '.join(pretty_print(x, dx) for x, dx in zip(mean_flat, std_flat))
+            err_flat = self.err.flatten()
+            formatted = ', '.join(pretty_print(x, dx) for x, dx in zip(mean_flat, err_flat))
             return f'pyjobs({formatted}, description={self.description})'
-        return f'pyjobs(mean={self.mean}, std={self.std}, description={self.description})'
+        return f'pyjobs(mean={self.mean}, err={self.err}, description={self.description})'
 
     def _new(self, new_jack_samples):
         new_obs = observable(description=self.description, label=self.label)
