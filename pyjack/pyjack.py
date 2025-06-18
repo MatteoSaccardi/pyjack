@@ -293,6 +293,25 @@ class observable:
     
     def load(filename):
         return load(filename)
+    
+    def increase_statistics(self, new_data):
+        '''
+        Increase the statistics of the observable by appending new data to the existing data.
+        Apply only to primary observables!
+
+        Parameters
+        ----------
+        new_data : numpy.ndarray
+            The new data to be appended to the existing data.
+
+        Notes
+        -----
+        This method recomputes the jackknife samples and the statistical properties of the observable.
+        '''
+        if self.primary is False:
+            print('[observable.increase_statistics] Warning: increase_statistics should only be applied to primary observables')
+        increased_data = numpy.append(self.data, new_data, axis=0)
+        self.create(increased_data)
 
     def __repr__(self):
         if self.mean is not None and self.err is not None:
