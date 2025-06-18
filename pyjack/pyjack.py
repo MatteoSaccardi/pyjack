@@ -203,7 +203,7 @@ class observable:
         '''
         numpy.random.seed(seed)
 
-        obs = pyjack.observable(description=self.description, label=self.label)
+        obs = observable(description=self.description, label=self.label)
 
         mean = numpy.atleast_1d(self.mean)
         shape = mean.shape
