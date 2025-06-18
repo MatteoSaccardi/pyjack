@@ -31,6 +31,8 @@ pip install -U git+https://github.com/MatteoSaccardi/pyjack.git@main
 Copyright (C) 2025, Matteo Saccardi
 
 ## Usage
+Check out the [tutorials folder](https://github.com/MatteoSaccardi/pyjack/tree/main/tutorials) for more examples.
+
 ```python
 import pyjack
 import numpy
