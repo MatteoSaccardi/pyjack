@@ -408,10 +408,9 @@ class jackfit:
         self.mean = y
         if cov is not None:
             self.cov = cov
-            self.err_cov = numpy.zeros_like(self.cov)
         else:
-            cov, err_cov = obs.covariance_matrix()
-            self.cov, self.err_cov = cov, err_cov
+            cov = obs.covariance_matrix()
+            self.cov = cov
         if self.W2 == 'diag':
             self.W2 = 1 / numpy.diag(cov)
         elif self.W2 == 'full':
