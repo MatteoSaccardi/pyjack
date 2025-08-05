@@ -421,7 +421,9 @@ class observable:
         return self._new(new_jack_samples)
 
     def __getitem__(self,slice):
-        new_jack_samples = self.jack_samples[:,*slice]
+        if not isinstance(slice, tuple):
+            slice = (slice,)
+        new_jack_samples = self.jack_samples[(slice(None),)+slice]
         new_obs = observable(description=self.description+f', slice {slice}', label=self.label)
         new_obs.create_from_jack_samples(new_jack_samples)
         new_obs.primary = False
