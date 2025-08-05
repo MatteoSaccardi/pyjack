@@ -420,7 +420,13 @@ class observable:
             new_jack_samples = other @ self.jack_samples
         return self._new(new_jack_samples)
 
-
+    def __getitem__(self,slice):
+        new_jack_samples = self.jack_samples[slice]
+        new_obs = observable(description=self.description+f', slice {slice}', label=self.label)
+        new_obs.create_from_jack_samples(new_jack_samples)
+        new_obs.primary = False
+        return new_obs
+    
 '''
 # Comparison with pyobs
 import numpy; from pyjack import pyjack; import pyobs
