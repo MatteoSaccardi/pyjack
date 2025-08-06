@@ -423,9 +423,15 @@ class observable:
     def __getitem__(self,key):
         if not isinstance(key, tuple):
             key = (key,)
-        new_jack_samples = self.jack_samples[(slice(None),)+key]
-        new_obs = observable(description=self.description+f', slice {key}', label=self.label)
-        new_obs.create_from_jack_samples(new_jack_samples)
+        if self.jack_samples is not None:
+            new_jack_samples = self.jack_samples[(slice(None),)+key]
+            new_obs = observable(description=self.description+f', slice {key}', label=self.label)
+            new_obs.create_from_jack_samples(new_jack_samples)
+        else:
+            mean = self.mean[key]
+            cov = self.cov[key]
+            new_obs = observable(description=self.description+f', slice {key}', label=self.label)
+            new_obs.create_from_cov(mean,cov)
         new_obs.primary = False
         return new_obs
     
