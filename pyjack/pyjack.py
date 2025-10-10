@@ -458,7 +458,7 @@ class observable:
                 return self
 
         elif isinstance(value, (numpy.ndarray, float, int)):
-            self.jack_samples[(slice(None),)+key] = value[None, ...]
+            self.jack_samples[(slice(None),)+key][:][key] = value[None, ...]
             self.mean[key] = value
             self.cov[numpy.ix_(idx, idx)] = 0.0
             self.cov[numpy.ix_(idx, not_idx)] = 0.0
