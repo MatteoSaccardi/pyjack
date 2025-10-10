@@ -447,7 +447,8 @@ class observable:
             # update jackknife samples (when available), means, errors and covariance
 
             try:
-                self.compute_stats_from_jack_samples(value.jack_samples)
+                self.jack_samples[(slice(None),) + key] = value.jack_samples
+                self.compute_stats_from_jack_samples(self.jack_samples)
             except:
                 self.jack_samples[(slice(None),) + key] = value.mean[None, ...]
                 self.mean[key] = value.mean
