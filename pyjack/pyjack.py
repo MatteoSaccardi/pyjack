@@ -435,6 +435,43 @@ class observable:
         new_obs.primary = False
         return new_obs
     
+    def __setitem__(self, key, value):
+        if not isinstance(key, tuple):
+            key = (key,)
+
+        # convert key to flat indices
+        idx = numpy.arange(self.mean.size).reshape(self.mean.shape)[key].ravel() # .ravel equivalent to .reshape(-1), although more flexible
+        not_idx = numpy.setdiff1d(numpy.arange(self.mean.size), idx)
+
+        if isinstance(value, observable):
+            # update jackknife samples (when available), means, errors and covariance
+
+            try:
+                self.compute_stats_from_jack_samples(value.jack_samples)
+            except:
+                self.jack_samples[(slice(None),) + key] = value.mean
+                self.mean[key] = value.mean
+                self.err[key] = value.err
+                self.cov[numpy.ix_(idx, idx)] = value.cov
+                self.cov[numpy.ix_(idx, not_idx)] = 0.0
+                self.cov[numpy.ix_(not_idx, idx)] = 0.0
+                return self
+
+        elif isinstance(value, (numpy.ndarray, float, int)):
+            self.jack_samples[(slice(None),)+key] = value
+            self.mean[key] = value
+            # optional: set covariance to zero if scalar overwrite
+            self.cov[numpy.ix_(idx, idx)] = 0.0
+            self.cov[numpy.ix_(idx, not_idx)] = 0.0
+            self.cov[numpy.ix_(not_idx, idx)] = 0.0
+            self.err[key] = 0.0
+
+        else:
+            raise TypeError(f'[pyojack.observable.__setitem__] Type {type(value)} not supported.')
+
+        
+
+    
 '''
 # Comparison with pyobs
 import numpy; from pyjack import pyjack; import pyobs
