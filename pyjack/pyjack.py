@@ -449,7 +449,7 @@ class observable:
             try:
                 self.compute_stats_from_jack_samples(value.jack_samples)
             except:
-                self.jack_samples[(slice(None),) + key] = value.mean
+                self.jack_samples[(slice(None),) + key] = value.mean[None, ...]
                 self.mean[key] = value.mean
                 self.err[key] = value.err
                 self.cov[numpy.ix_(idx, idx)] = value.cov
@@ -458,9 +458,8 @@ class observable:
                 return self
 
         elif isinstance(value, (numpy.ndarray, float, int)):
-            self.jack_samples[(slice(None),)+key] = value
+            self.jack_samples[(slice(None),)+key] = value[None, ...]
             self.mean[key] = value
-            # optional: set covariance to zero if scalar overwrite
             self.cov[numpy.ix_(idx, idx)] = 0.0
             self.cov[numpy.ix_(idx, not_idx)] = 0.0
             self.cov[numpy.ix_(not_idx, idx)] = 0.0
