@@ -4,7 +4,9 @@ from .jackfit import jackfit
 
 from .ufuncs import (
     exp, log, log10, sqrt, sin, cos, tan,
+    arcsin, arccos, arctan,
     sinh, cosh, tanh, abs, fabs, conj, real, imag,
+    arcsinh, arccosh, arctanh,
     sum, mean, flip, roll, squeeze, concatenate, transpose, dot,
     increase_statistics
 )
@@ -15,7 +17,9 @@ __all__ = [ 'observable',
             'jackfit',
             'exp', 'log', 'log10', 'sqrt',
             'sin', 'cos', 'tan',
+            'arcsin', 'arccos', 'arctan',
             'sinh', 'cosh', 'tanh',
+            'arcsinh', 'arccosh', 'arctanh',
             'abs', 'fabs', 'conj', 'real', 'imag',
             'sum', 'mean', 'flip', 'roll', 'squeeze', 'concatenate', 'transpose', 'dot',
             'increase_statistics'
