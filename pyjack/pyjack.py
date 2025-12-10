@@ -49,7 +49,7 @@ class observable:
         self.data = None
         self.jack_samples = None
         self.N = None
-        self.shape = None
+        # self.shape = None
         self.mean = None
         self.err = None
         self.cov = None
@@ -81,7 +81,7 @@ class observable:
             data = numpy.moveaxis(data, axis, 0)
         self.data = data
         self.N = data.shape[0]
-        self.shape = data.shape[1:] # shape of observable without config axis
+        # self.shape = data.shape[1:] # shape of observable without config axis
         # Compute jackknife samples: shape (N, ...) where
         # jack_samples[i] = mean of data excluding data[i]
         self.jack_samples = self.compute_jack_samples(data)
