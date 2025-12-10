@@ -291,11 +291,13 @@ class observable:
         plt.draw()
         plt.show()
 
+    @property
     def shape(self):
-        return self.jack_samples.shape[0:]
+        return self.jack_samples.shape[1:]
     
+    @property
     def len(self):
-        return self.jack_samples.shape[0]
+        return self.jack_samples.shape[1]
     
     def save(self, filename):
         save(filename, self)
