@@ -7,7 +7,7 @@ from .ufuncs import (
     arcsin, arccos, arctan,
     sinh, cosh, tanh, abs, fabs, conj, real, imag,
     arcsinh, arccosh, arctanh,
-    sum, mean, flip, roll, squeeze, concatenate, transpose, dot,
+    sum, obs_mean, flip, roll, squeeze, concatenate, transpose, dot,
     increase_statistics
 )
 
