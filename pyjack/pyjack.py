@@ -279,6 +279,8 @@ class observable:
 
     def plot_autocorrelation(self, which_obs=[0]):
         N = self.N
+        if self.data is None:
+            self.data = self.data_from_jack()
         data = self.data.reshape(N,-1)
         
         plt.figure(figsize=(10,5))
