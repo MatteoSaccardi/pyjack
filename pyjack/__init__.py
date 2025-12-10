@@ -21,6 +21,6 @@ __all__ = [ 'observable',
             'sinh', 'cosh', 'tanh',
             'arcsinh', 'arccosh', 'arctanh',
             'abs', 'fabs', 'conj', 'real', 'imag',
-            'sum', 'mean', 'flip', 'roll', 'squeeze', 'concatenate', 'transpose', 'dot',
+            'sum', 'obs_mean', 'flip', 'roll', 'squeeze', 'concatenate', 'transpose', 'dot',
             'increase_statistics'
         ]
