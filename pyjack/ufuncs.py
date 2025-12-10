@@ -1,9 +1,10 @@
 import numpy
+import pyjack
 
 def _apply_ufunc(func, x, *args, **kwargs):
     if x.creator == 'create_from_cov':
         x_sampled = x.sample(1000)
-        new_x = observable(description=x.description, label=x.label)
+        new_x = pyjack.observable(description=x.description, label=x.label)
         new_x.create(x_sampled)
         return new_x._new(func(new_x.jack_samples, *args, **kwargs))
     return x._new(func(x.jack_samples, *args, **kwargs))

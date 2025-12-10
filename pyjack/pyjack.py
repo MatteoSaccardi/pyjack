@@ -292,7 +292,7 @@ class observable:
         plt.show()
 
     def save(self, filename):
-        save(self, filename)
+        save(filename, self)
     
     def load(filename):
         return load(filename)

@@ -29,16 +29,16 @@ def pretty_print(x, dx, further_digits=1):
     decimal_places = max(0, -int(numpy.floor(numpy.log10(dx)))) + further_digits
     return f'{x:.{decimal_places}f}({int(dx * 10**decimal_places)})'
 
-def save(data: dict, filename: str):
+def save(filename: str, data: dict):
     '''
     Save a dictionary (with arbitrary Python objects) to a binary file.
 
     Parameters
     ----------
-    data : dict
-        The dictionary to save.
     filename : str
         The filename to save the dictionary to (should end in .pkl).
+    data : dict
+        The dictionary to save.
     '''
     with open(filename, 'wb') as f:
         pickle.dump(data, f)
