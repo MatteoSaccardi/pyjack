@@ -33,7 +33,7 @@ def imag(x):    return _apply_ufunc(numpy.imag,  x)
 
 # Recall that _apply_ufunc acts on the jackknife samples, hence the axis of the observable must be shifted by 1
 def sum(x, axis=0):           return _apply_ufunc(numpy.sum, x, axis=axis+1)
-def obs_mean(x, axis=0):      return _apply_ufunc(numpy.mean, x, axis=axis+1)
+def mean(x, axis=0):          return _apply_ufunc(numpy.mean, x, axis=axis+1)
 def flip(x, axis=0):          return _apply_ufunc(numpy.flip, x, axis=axis+1)
 def roll(x, axis=0, shift=0): return _apply_ufunc(numpy.roll, x, axis=axis+1, shift=shift)
 def squeeze(x, axis=None):    return _apply_ufunc(numpy.squeeze, x, axis=axis+1)
