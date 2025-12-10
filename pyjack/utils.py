@@ -108,23 +108,6 @@ def save(filename: str, data: dict):
     with open(filename, 'wb') as f:
         pickle.dump(data, f)
 
-def load(filename: str) -> dict:
-    '''
-    Load a dictionary from a binary file.
-
-    Parameters
-    ----------
-    filename : str
-        The pickle file to load from.
-
-    Returns
-    -------
-    dict
-        The loaded dictionary.
-    '''
-    with open(filename, 'rb') as f:
-        return pickle.load(f)
-
 def plt_errorbar_fill_color(x,y,dy,color='C0',label=None,alpha=0.3):
     '''Plot errorbar and fill it with color
     
