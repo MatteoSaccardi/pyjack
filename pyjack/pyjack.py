@@ -167,6 +167,7 @@ class observable:
             jack_samples = self.jack_samples
         self.jack_samples = jack_samples
         self.compute_stats_from_jack_samples(self.jack_samples)
+        self.data = self.data_from_jack()
 
     def create_from_cov(self, mean, cov):
         '''
@@ -230,6 +231,18 @@ class observable:
         data_samples = data_samples.reshape((N,) + shape)
         obs.create(data_samples)
         return obs
+    
+    def data_from_jack(self):
+        '''
+        Reconstruct original data from jackknife samples.
+        '''
+        jk_samples = self.jack_samples
+        jk = numpy.asarray(jk_samples)
+        N = jk.shape[0]
+        mean_full = jk.mean(axis=0)
+        data = N * mean_full - (N - 1) * jk
+        return data
+
 
     def error(self):
         '''
