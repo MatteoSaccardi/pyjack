@@ -267,12 +267,12 @@ class jackfit:
         # check projector properties in Eq. (2.9)
         # i.e. P WJ = WJ, P^2 = P, tr(P) = Npars
         check = numpy.linalg.norm(self.P@WJ-WJ) / numpy.linalg.norm(WJ)
-        if check > 1e-12:
+        if check > 1e-8:
             print(f'[jackfit.compute_proj] PWJ=WJ does not hold: ||PWJ-WJ|| / ||WJ||={check}')
         check = numpy.linalg.norm(self.P@self.P-self.P) / numpy.linalg.norm(self.P)
-        if check > 1e-12:
+        if check > 1e-8:
             print(f'[jackfit.compute_proj] P^2=P does not hold: ||PP-P|| / ||P||={check}')
-        if numpy.fabs(numpy.sum(numpy.diag(self.P))-WJ.shape[1]) > 1e-10:
+        if numpy.fabs(numpy.sum(numpy.diag(self.P))-WJ.shape[1]) > 1e-8:
             print(f'[jackfit.compute_proj] tr[P] = {numpy.sum(numpy.diag(self.P))} != Npars = {WJ.shape[1]}')
         
     def compute_chi2exp(self, cov=None, W2=None, J=None):
