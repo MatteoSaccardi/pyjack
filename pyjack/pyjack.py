@@ -6,6 +6,9 @@ plt.rcParams.update({'font.size': 16})
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
+import socket
+from datetime import datetime
+
 class observable:
     def __init__(self, description=None, label=None):
         '''
@@ -54,6 +57,12 @@ class observable:
         self.err = None
         self.cov = None
         self.tau_int = None
+
+        self.creation_info = {
+            'timestamp': datetime.now().isoformat(timespec='seconds'),
+            'hostname': socket.gethostname(),
+            'ip': socket.gethostbyname(socket.gethostname())
+        }
     
     def create(self, data, axis=0):
         '''
