@@ -94,20 +94,6 @@ def load(filename: str):
 
     return obj
 
-def save(filename: str, data: dict):
-    '''
-    Save a dictionary (with arbitrary Python objects) to a binary file.
-
-    Parameters
-    ----------
-    filename : str
-        The filename to save the dictionary to (should end in .pkl).
-    data : dict
-        The dictionary to save.
-    '''
-    with open(filename, 'wb') as f:
-        pickle.dump(data, f)
-
 def plt_errorbar_fill_color(x,y,dy,color='C0',label=None,alpha=0.3):
     '''Plot errorbar and fill it with color
     
