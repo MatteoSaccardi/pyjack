@@ -317,7 +317,10 @@ class observable:
 
     @property
     def shape(self):
-        return self.jack_samples.shape[1:]
+        try:
+            return self.jack_samples.shape[1:]
+        except:
+            return self.mean.shape
     
     def __len__(self):
         return self.jack_samples.shape[1]
