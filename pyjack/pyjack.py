@@ -64,15 +64,16 @@ class observable:
             'ip': socket.gethostbyname(socket.gethostname())
         }
     
-    def create(self, data, axis=0):
+    def create(self, data, axis=0, binsize=1):
         '''
-        Creates the observable with data and computes statistical properties.
+        Creates the observable with data, applies binning and computes statistical properties.
 
         Parameters:
         data (array-like): The input data to be used for the observable. It is assumed
                         to have configurations as the first axis unless specified otherwise.
         axis (int, optional): The axis of the data that represents configurations. If not
                             zero, the data is moved to have configurations along the first axis.
+        binsize (int, optional): The bin size for binning the data. Default is 1.
 
         Attributes:
         data (numpy.ndarray): The input data with configurations along the first axis.
@@ -88,6 +89,16 @@ class observable:
         self.creator = 'create'
         if axis != 0:
             data = numpy.moveaxis(data, axis, 0)
+        
+        # --- Binning Logic ---
+        N_orig = data.shape[0]
+        if binsize > 1:
+            n_bins = int(numpy.ceil(N_orig / binsize))
+            # array_split handles uneven splits by putting leftovers in the last bins
+            # We average over each split to create the binned data
+            data = numpy.array([numpy.mean(b, axis=0) for b in numpy.array_split(data, n_bins, axis=0)])
+        # ---------------------
+
         self.data = data
         self.N = data.shape[0]
         # self.shape = data.shape[1:] # shape of observable without config axis
