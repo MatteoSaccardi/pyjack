@@ -123,10 +123,13 @@ class observable:
         '''
         if data is None:
             data = self.data
+        
+        # OLD CODE
         # return numpy.array([
         #         numpy.mean(numpy.delete(data, i, axis=0), axis=0)
         #         for i in range(data.shape[0])
         #     ])
+
         # Sum all bins, then subtract each bin to get the 'leave-one-out' sum
         total_sum = numpy.sum(data, axis=0)
         # Jackknife sample i is (Total - bin_i) / (N_bins - 1)
