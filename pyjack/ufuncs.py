@@ -53,13 +53,24 @@ def increase_statistics(obs, new_data):
 
     Notes
     -----
-    This method recomputes the jackknife samples and the statistical properties of the observable.
+    This function preserves the active resampling method of the input observable.
+    In particular:
+
+    - jackknife observables are rebuilt with jackknife
+    - bootstrap observables are rebuilt with bootstrap, reusing the current
+      number of replicas
+
+    Derived observables should generally not use this function directly, because
+    they do not represent primary Monte Carlo time-series data.
     '''
     if obs.primary is False:
         print('[pyjack.increase_statistics]Warning: increase_statistics should only be applied to primary observables')
     increased_obs = pyjack.observable(description=obs.description, label=obs.label)
     increased_data = numpy.append(obs.data, new_data, axis=0)
-    increased_obs.create(increased_data)
+    if obs.resampling_method == 'bootstrap':
+        increased_obs.create(increased_data, method='bootstrap', n_resamples=obs.N)
+    else:
+        increased_obs.create(increased_data)
     return increased_obs
 
 # def sum(obs,axis=0):

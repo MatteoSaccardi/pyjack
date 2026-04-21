@@ -1,14 +1,39 @@
+Metadata-Version: 2.4
+Name: pyjack
+Version: 1.0.0
+Summary: Jackknife-based observable statistics and error propagation
+Home-page: https://github.com/MatteoSaccardi/pyjack
+Author: Matteo Saccardi
+Author-email: matteo.saccardi97@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU GPLv2
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: sympy
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
 # pyjack
 
-`pyjack` is a lightweight Python package for handling observables with resampling-based error propagation. It defaults to jackknife and also supports bootstrap analysis for the same observable workflow.
+`pyjack` is a lightweight Python package for handling observables with jackknife resampling, allowing error propagation and operations like arithmetic, powers, and universal functions.
 
 ## Features
 - Create observables from raw data
 - Automatic jackknife sample generation
-- Optional bootstrap over binned blocks
 - Arithmetic operations in python with proper error propagation
 - Support for functions like `exp`, `log`, `sqrt`, etc.
-- Confidence intervals with `normal`, `percentile`, and `bca` methods
 - Plotting autocorrelation
 - Perform fits, see [this paper](https://arxiv.org/pdf/2209.14188)
 
@@ -72,26 +97,6 @@ print(fit1.params)
 fit1.plot()
 
 ```
-
-`method='jackknife'` reproduces the original workflow. Bootstrap is opt-in and uses resampling with replacement of the binned configurations.
-
-Bootstrap example:
-
-```python
-obs_boot = pyjack.observable(description='My Bootstrap Observable')
-obs_boot.create(my_data, method='bootstrap', binsize=5, n_resamples=2000, seed=42)
-
-low, high = obs_boot.confidence_interval(level=0.68, method='bca')
-```
-
-For runnable examples, see:
-- `tests/test_jackknife.ipynb`
-- `tests/test_bootstrap.ipynb`
-
-Tutorials:
-- `tutorials/tutorial_jackknife.ipynb`
-- `tutorials/tutorial_bootstrap.ipynb`
-- `tutorials/method_choice.md`
 
 ## License
 GPL-2.0 License

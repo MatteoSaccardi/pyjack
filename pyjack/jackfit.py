@@ -73,7 +73,7 @@ class LevenbergMarquardt:
         self.x = params
 
 def chi2(params, x, y, model, W2):
-    '''
+    r'''
     Compute chi-squared given model function and matrix W as
         \sum_{x1,x2} [y(x1)-model(x1)] W2(x1,x2) [y(x2)-model(x2)]
     '''
@@ -229,7 +229,7 @@ class jackfit:
         return self.extrapolate(x,plot,cov,log)
     
     def chi2(self, params, x, y):
-        '''
+        r'''
         Compute chi-squared given model function and matrix W as
             \sum_{x1,x2} [y(x1)-model(x1)] W2(x1,x2) [y(x2)-model(x2)]
         '''
@@ -329,7 +329,7 @@ class jackfit:
         return cov_params
 
     def compute_pvalue(self, chi2obs=None, cov=None, W2=None, J=None, num_samples=10000):
-        '''
+        r'''
         Compute, using Monte-Carlo integration, the p-value as
                Q(\chi^2_{\obs},\nu) 
                = \int \prod_{i=1}^{N_\nu} dz_i P(z_i)
@@ -379,6 +379,10 @@ class jackfit:
             The function extracts:
             - `obs.error()` for uncertainties on the measurements.
             - `obs.covariance_matrix()` for the covariance matrix.
+            The current fitting interface expects a one-dimensional observable,
+            i.e. `obs.mean` should be a vector aligned with `x`. For
+            multidimensional observables, select or reshape the component you
+            want to fit before calling `fit()`.
         max_iter : int = 1000
             Maximum number of iterations for Levenberg-Marquardt minimizer.
         tol : float = 1e-8
