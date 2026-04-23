@@ -50,7 +50,7 @@ class observable:
         
         self.primary = True
         self.creator = None
-        self.resampling_method = None
+        # self.resampling_method = None
         self.data = None
         self.jack_samples = None
         self.N = None
@@ -346,8 +346,8 @@ class observable:
         primary data. Therefore BCa is only available when the observable still
         retains primary data.
         '''
-        if self.resampling_method != 'bootstrap':
-            print("[pyjack.observable.compute_bca_interval] Warning: BCa is defined here only for bootstrap observables. Falling back to normal interval.")
+        if getattr(self, 'resampling_method', 'jackknife') != 'bootstrap':
+            print('[pyjack.observable.compute_bca_interval] Warning: BCa is defined here only for bootstrap observables. Falling back to normal interval.')
             return self.confidence_interval(level=level, method='normal')
 
         if self.data is None:
@@ -580,7 +580,7 @@ class observable:
         # Jackknife naturally supports the usual symmetric error interval. If a
         # bootstrap-style interval is requested, keep the workflow alive but report
         # the method switch explicitly.
-        if self.resampling_method == 'jackknife' and method != 'normal':
+        if getattr(self, 'resampling_method', 'jackknife')  == 'jackknife' and method != 'normal':
             print(f"[pyjack.observable.confidence_interval] Warning: method='{method}' is not available for jackknife observables. Using method='normal' instead.")
             method = 'normal'
 
@@ -589,7 +589,7 @@ class observable:
             return self.mean - z * self.err, self.mean + z * self.err
 
         if method == 'percentile':
-            if self.resampling_method != 'bootstrap':
+            if getattr(self, 'resampling_method', 'jackknife') != 'bootstrap':
                 print("[pyjack.observable.confidence_interval] Warning: percentile intervals require method='bootstrap'. Using method='normal' instead.")
                 return self.confidence_interval(level=level, method='normal')
             lower, upper = numpy.quantile(self.jack_samples, [alpha, 1.0 - alpha], axis=0)
@@ -637,7 +637,7 @@ class observable:
     def plot_autocorrelation(self, which_obs=[0]):
         N = self.N
         if self.data is None:
-            if self.resampling_method == 'bootstrap':
+            if getattr(self, 'resampling_method', 'jackknife')  == 'bootstrap':
                 raise ValueError('[pyjack.observable.plot_autocorrelation] Bootstrap-derived observables do not retain reconstructible time-series data.')
             self.data = self.data_from_jack()
         data = self.data.reshape(N,-1)
@@ -698,7 +698,7 @@ class observable:
         if self.primary is False:
             print('[observable.increase_statistics] Warning: increase_statistics should only be applied to primary observables')
         increased_data = numpy.append(self.data, new_data, axis=0)
-        if self.resampling_method == 'bootstrap':
+        if getattr(self, 'resampling_method', 'jackknife') == 'bootstrap':
             self.create(increased_data, method='bootstrap', n_resamples=self.N)
         else:
             self.create(increased_data)
@@ -717,7 +717,7 @@ class observable:
 
     def _new(self, new_jack_samples):
         new_obs = observable(description=self.description, label=self.label)
-        if self.resampling_method == 'bootstrap':
+        if getattr(self, 'resampling_method', 'jackknife') == 'bootstrap':
             new_obs.create_from_bootstrap_samples(new_jack_samples)
         else:
             new_obs.create_from_jack_samples(new_jack_samples)
@@ -816,7 +816,7 @@ class observable:
                 key = (key,)
             new_jack_samples = numpy.array(self.jack_samples)[(slice(None),)+key]
             new_obs = observable(description=self.description, label=self.label)
-            if self.resampling_method == 'bootstrap':
+            if getattr(self, 'resampling_method', 'jackknife') == 'bootstrap':
                 new_obs.create_from_bootstrap_samples(new_jack_samples)
             else:
                 new_obs.create_from_jack_samples(new_jack_samples)
@@ -841,7 +841,7 @@ class observable:
 
             try:
                 self.jack_samples[(slice(None),) + key] = value.jack_samples
-                if self.resampling_method == 'bootstrap':
+                if getattr(self, 'resampling_method', 'jackknife') == 'bootstrap':
                     self.compute_stats_from_bootstrap_samples(self.jack_samples)
                 else:
                     self.compute_stats_from_jack_samples(self.jack_samples)
